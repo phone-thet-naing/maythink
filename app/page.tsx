@@ -1,6 +1,41 @@
+'use client';
+
 import Image from "next/image";
+import { useEffect } from "react";
 
 export default function Home() {
+
+  useEffect(() => {
+    console.log("Welcome to your new Next.js app!");
+
+    const sheetId = "1QODX9bIXybLLMjCwdWDhKhEVBk6EL8StIosWP6JIqlE";
+    const sheetName = encodeURIComponent("Applications");
+    const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
+    fetch(sheetURL)
+      .then(response => response.text())
+      .then(csvText => {
+        const rows = csvText.split('\n');
+        const headers = rows[0].split(',');
+
+        const data = rows.slice(1).map(row => {
+          const values = row.split(',');
+          return headers.reduce((obj, header, index) => {
+            obj[header] = values[index];
+            return obj;
+          }, {});
+        });
+
+        console.log(data);
+        console.log(csvText);
+        // You can parse the CSV text here if needed
+      })
+      .catch(error => {
+        console.error('Error fetching the Google Sheet:', error);
+      });
+
+
+  }, [])
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
